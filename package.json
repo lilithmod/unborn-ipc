@@ -1,0 +1,22 @@
+{
+  "name": "@lilithmod/unborn-template",
+  "version": "1.0.0",
+  "description": "A template for libraries with typescript and github actions",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "private": true,
+  "files": [
+    "/dist"
+  ],
+  "keywords": [],
+  "author": "ghqst",
+  "license": "ISC",
+  "dependencies": {},
+  "devDependencies": {
+    "@types/node": "^16.11.6",
+    "typescript": "^4.6.2"
+  },
+  "engines": {
+    "node": ">=15.0.0"
+  }
+}
