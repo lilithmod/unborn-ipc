@@ -6,7 +6,14 @@ import xpipe from 'xpipe'
 
 interface IpcClient extends EventEmitter {
     write: (packet: Buffer) => void
+    end: () => void
     on(event: 'packet', listener: (packet: Buffer) => void): this
+    on(event: 'end', listener: () => void): this
+}
+
+interface IpcServer extends EventEmitter {
+    on(event: 'listen', listener: () => void): this
+    on(event: 'connect', listener: (client: Socket) => void): this
 }
 
 async function cleanupSocket(path: string) {
@@ -17,7 +24,7 @@ async function cleanupSocket(path: string) {
     try {
         await fsp.stat(path)
         try {
-            console.log('Cleaning up socket')
+            // console.log('Cleaning up socket')
             await fsp.unlink(path)
         } catch (e) {
             throwError(e)
@@ -27,7 +34,9 @@ async function cleanupSocket(path: string) {
     }
 }
 
-export async function ipcListen(path: string, handler: (client: IpcClient) => void) {
+export async function ipcListen(path: string, handler: (client: IpcClient) => void): Promise<IpcServer> {
+    const emitter = new EventEmitter()
+
     path = xpipe.eq(path)
 
     await cleanupSocket(path)
@@ -35,19 +44,24 @@ export async function ipcListen(path: string, handler: (client: IpcClient) => vo
     const connections: Map<number, Socket> = new Map<number, Socket>()
 
     const server = net.createServer(c => {
-        console.log('Client connected')
+        const client: IpcClient = new EventEmitter() as any
+
+        emitter.emit('connect', c)
 
         const self = Date.now()
         connections.set(self, c)
         c.on('end', () => {
-            console.log('Client disconnected.')
+            // console.log('Client disconnected.')
+            client.emit('end')
             connections.delete(self)
         })
 
-        const client: IpcClient = new EventEmitter() as any
-
         client.write = (packet) => {
             c.write(packet)
+        }
+
+        client.end = () => {
+            c.end()
         }
 
         c.on('data', data => {
@@ -58,5 +72,8 @@ export async function ipcListen(path: string, handler: (client: IpcClient) => vo
     })
 
     server.listen(path)
-    console.log('Listening at', path)
+    emitter.emit('listen')
+    // console.log('Listening at', path)
+
+    return emitter
 }
