@@ -4,7 +4,6 @@
   "description": "A template for libraries with typescript and github actions",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
-  "private": true,
   "files": [
     "/dist"
   ],
