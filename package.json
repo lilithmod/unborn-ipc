@@ -1,7 +1,7 @@
 {
-  "name": "@lilithmod/unborn-template",
+  "name": "@lilithmod/unborn-ipc",
   "version": "1.0.0",
-  "description": "A template for libraries with typescript and github actions",
+  "description": "A very simple typescript wrapper to create a unix/windows socket and write data.",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
   "files": [
