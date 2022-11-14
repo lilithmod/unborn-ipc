@@ -7,6 +7,7 @@ import xpipe from 'xpipe'
 interface IpcClient extends EventEmitter {
     write: (packet: Buffer) => void
     end: () => void
+    next: () => Promise<Buffer>
     on(event: 'packet', listener: (packet: Buffer) => void): this
     on(event: 'end', listener: () => void): this
 }
@@ -24,7 +25,6 @@ async function cleanupSocket(path: string) {
     try {
         await fsp.stat(path)
         try {
-            // console.log('Cleaning up socket')
             await fsp.unlink(path)
         } catch (e) {
             throwError(e)
@@ -51,7 +51,6 @@ export async function ipcListen(path: string, handler: (client: IpcClient) => vo
         const self = Date.now()
         connections.set(self, c)
         c.on('end', () => {
-            // console.log('Client disconnected.')
             client.emit('end')
             connections.delete(self)
         })
@@ -68,12 +67,18 @@ export async function ipcListen(path: string, handler: (client: IpcClient) => vo
             client.emit('packet', data)
         })
 
+        client.next = () => {
+            return new Promise((resolve, reject) => {
+                client.once('packet', resolve)
+                client.once('end', reject)
+            })
+        }
+
         handler(client)
     })
 
     server.listen(path)
     emitter.emit('listen')
-    // console.log('Listening at', path)
 
     return emitter
 }

@@ -2,9 +2,8 @@ import { ipcListen } from './index.js'
 
 const SOCKETFILE = '/tmp/lilith.sock'
 
-ipcListen(SOCKETFILE, client => {
-    client.on('packet', packet => {
-        console.log(packet.toString())
-    })
+ipcListen(SOCKETFILE, async client => {
+    const packet = await client.next()
+    console.log(packet.toString())
 })
 
