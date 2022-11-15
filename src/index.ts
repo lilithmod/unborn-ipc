@@ -4,7 +4,7 @@ import * as net from 'net'
 import { Socket } from 'net'
 import xpipe from 'xpipe'
 
-interface IpcClient extends EventEmitter {
+export interface IpcClient extends EventEmitter {
     write: (packet: Buffer) => void
     end: () => void
     next: () => Promise<Buffer>
@@ -12,7 +12,7 @@ interface IpcClient extends EventEmitter {
     on(event: 'end', listener: () => void): this
 }
 
-interface IpcServer extends EventEmitter {
+export interface IpcServer extends EventEmitter {
     on(event: 'listen', listener: () => void): this
     on(event: 'connect', listener: (client: Socket) => void): this
 }
