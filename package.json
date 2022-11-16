@@ -7,14 +7,20 @@
   "files": [
     "/dist"
   ],
+  "scripts": {
+    "test": "tsc && concurrently --kill-others --names \"SERVER,CLIENT\" -c \"bgBlue.bold,bgMagenta.bold\" \"node dist/test\" \"node dist/testClient\"",
+    "test-nb": "concurrently --kill-others --names \"SERVER,CLIENT\" -c \"bgBlue.bold,bgMagenta.bold\" \"node dist/test\" \"node dist/testClient\""
+  },
   "keywords": [],
   "author": "ghqst",
   "license": "ISC",
   "dependencies": {
+    "fifo": "^2.4.1",
     "xpipe": "^1.0.5"
   },
   "devDependencies": {
     "@types/node": "^16.11.6",
+    "concurrently": "^7.5.0",
     "typescript": "^4.6.2"
   },
   "engines": {
